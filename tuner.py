@@ -283,7 +283,7 @@ class MTUTuner:
                 ip, desc = target, target
 
             print(f"    测试 {ip} ({desc})...", end="", flush=True)
-            cmd = ["ping", "-n", PING_COUNT, "-w", PING_TIMEOUT_MS]
+            cmd = ["ping", "-n", str(PING_COUNT), "-w", str(PING_TIMEOUT_MS)]
             if self.source_ip:
                 cmd += ["-S", self.source_ip]
             cmd.append(ip)
@@ -302,7 +302,7 @@ class MTUTuner:
 
         while low <= high:
             mid = (low + high) // 2
-            cmd = ["ping", "-f", "-l", str(mid), "-n", PING_COUNT, "-w", PROBE_TIMEOUT_MS]
+            cmd = ["ping", "-f", "-l", str(mid), "-n", str(PING_COUNT), "-w", str(PROBE_TIMEOUT_MS)]
             if self.source_ip:
                 cmd += ["-S", self.source_ip]
             cmd.append(self.target_ip)
@@ -598,10 +598,15 @@ class MTUTuner:
             sel = input("  请输入编号 [1-18]: ").strip()
             if sel == "18":
                 while True:
-                    raw = input(f"  请输入 Overhead 字节数（{MANUAL_OVERHEAD_MIN}~{MANUAL_OVERHEAD_MAX}）: ").strip()
-                    if raw.isdigit() and MANUAL_OVERHEAD_MIN <= int(raw) <= MANUAL_OVERHEAD_MAX:
-                        return "Custom", int(raw)
-                    warn(f"请输入 {MANUAL_OVERHEAD_MIN}~{MANUAL_OVERHEAD_MAX} 之间的整数。")
+                    raw = input(
+                        f"  请输入 Overhead 字节数"
+                        f"({MANUAL_OVERHEAD_MIN}~{MANUAL_OVERHEAD_MAX}): "
+                    ).strip()
+                    value = int(raw)
+                    if raw.isdigit() and MANUAL_OVERHEAD_MIN <= value <= MANUAL_OVERHEAD_MAX:
+                        return "Custom", value
+                    warn(f"请输入 {MANUAL_OVERHEAD_MIN}~{MANUAL_OVERHEAD_MAX} "
+                         f"之间的整数")
             if sel in menu:
                 return menu[sel]
             warn("无效输入，请输入 1~18 之间的数字。")
